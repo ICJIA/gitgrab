@@ -1,0 +1,57 @@
+{
+  "name": "gitgrab",
+  "version": "1.0.0",
+  "description": "CLI tool to list, select, and clone GitHub repositories",
+  "main": "bin/index.js",
+  "type": "module",
+  "bin": {
+    "gitgrab": "./bin/index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node bin/index.js",
+    "test": "node --test tests/",
+    "test:github": "node --test tests/github.test.js",
+    "test:git": "node --test tests/git.test.js",
+    "test:cli": "node --test tests/cli.test.js",
+    "prepare": "chmod +x bin/index.js",
+    "prepublishOnly": "npm test"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ICJIA/gitgrab.git"
+  },
+  "homepage": "https://github.com/ICJIA/gitgrab#readme",
+  "bugs": {
+    "url": "https://github.com/ICJIA/gitgrab/issues"
+  },
+  "keywords": [
+    "github",
+    "cli",
+    "git",
+    "clone",
+    "repository",
+    "manager"
+  ],
+  "author": "ICJIA",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^19.0.7",
+    "chalk": "^5.2.0",
+    "cli-table3": "^0.6.3",
+    "commander": "^10.0.1",
+    "dotenv": "^16.0.3",
+    "inquirer": "^9.2.0",
+    "ora": "^6.3.0",
+    "simple-git": "^3.17.0",
+    "fs-extra": "^11.1.1"
+  }
+}
