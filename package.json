@@ -44,7 +44,7 @@
   "author": "ICJIA",
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "^19.0.7",
+    "@octokit/rest": "^21.1.1",
     "chalk": "^5.2.0",
     "cli-table3": "^0.6.3",
     "commander": "^10.0.1",
