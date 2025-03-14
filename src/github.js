@@ -84,7 +84,9 @@ export async function getRepos(target, token, limit = 15) {
       throw new Error("Authentication failed. Check your GitHub token");
     } else if (
       error.status === 403 &&
-      error.response?.headers?.["x-ratelimit-remaining"] === "0"
+      error.response?.headers &&
+      typeof error.response.headers.get === "function" &&
+      error.response.headers.get("x-ratelimit-remaining") === "0"
     ) {
       throw new Error(
         "GitHub API rate limit exceeded. Please use a valid token or wait before trying again"

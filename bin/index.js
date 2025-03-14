@@ -12,6 +12,7 @@ import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
 import inquirer from "inquirer";
+import { validateLimit } from "../src/utils.js";
 
 // Get the project root directory
 const __filename = fileURLToPath(import.meta.url);
@@ -222,24 +223,23 @@ program
         process.exit(1);
       }
 
-      // Parse limit as integer and enforce maximum of 15
-      let limit = parseInt(options.limit, 10);
-      if (isNaN(limit) || limit <= 0) {
-        console.error(chalk.red("Error: Limit must be a positive number"));
+      // Parse and validate limit
+      let limit;
+      try {
+        limit = validateLimit(options.limit);
+        if (parseInt(options.limit, 10) > 15) {
+          console.log(
+            chalk.yellow(
+              `Limiting to maximum of 15 repositories (you requested ${options.limit})`
+            )
+          );
+        }
+      } catch (error) {
+        console.error(chalk.red(`Error: ${error.message}`));
         console.log(
           chalk.yellow("Please provide a valid number for the --limit option")
         );
         process.exit(1);
-      }
-
-      // Enforce maximum limit of 15
-      if (limit > 15) {
-        console.log(
-          chalk.yellow(
-            `Limiting to maximum of 15 repositories (you requested ${limit})`
-          )
-        );
-        limit = 15;
       }
 
       // Fetch repositories
