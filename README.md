@@ -1,6 +1,6 @@
-# GitGrab
+# ICJIA GitGrab
 
-A CLI tool to list, select, and clone GitHub repositories with ease.
+A Node 18+ CLI tool to list, select, and bulk clone GitHub repositories.
 
 ## Features
 
