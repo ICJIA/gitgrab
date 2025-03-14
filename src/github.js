@@ -1,9 +1,17 @@
 import { Octokit } from "@octokit/rest";
 import ora from "ora";
+import { getMaxReposLimit } from "./utils.js";
 
 export async function getRepos(target, token, limit = 15) {
-  // Enforce the maximum limit of 15 repositories
-  limit = Math.min(parseInt(limit), 15);
+  // Make sure limit is parsed as integer first
+  let parsedLimit = parseInt(limit, 10);
+  if (isNaN(parsedLimit) || parsedLimit <= 0) {
+    parsedLimit = 15; // Default if parsing fails
+  }
+
+  // Enforce the maximum limit from environment or use default
+  const maxLimit = getMaxReposLimit();
+  parsedLimit = Math.min(parsedLimit, maxLimit);
 
   if (!token) {
     throw new Error("GitHub token is required");
@@ -35,13 +43,13 @@ export async function getRepos(target, token, limit = 15) {
 
     // Fetch repositories based on target type
     const fetchSpinner = ora(
-      `Fetching the 15 most recent repositories for ${target}...`
+      `Fetching the ${parsedLimit} most recent repositories for ${target}...`
     ).start();
 
     if (isOrg) {
       const { data } = await octokit.repos.listForOrg({
         org: target,
-        per_page: limit,
+        per_page: parsedLimit,
         sort: "updated",
         direction: "desc",
       });
@@ -49,7 +57,7 @@ export async function getRepos(target, token, limit = 15) {
     } else {
       const { data } = await octokit.repos.listForUser({
         username: target,
-        per_page: limit,
+        per_page: parsedLimit,
         sort: "updated",
         direction: "desc",
       });

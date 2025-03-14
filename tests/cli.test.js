@@ -77,6 +77,31 @@ test("CLI - Command line interface tests", async (t) => {
     assert.strictEqual(limitedResult, 15);
   });
 
+  // Add a test to verify CLI's respect for MAX_REPOS
+  await t.test("should respect MAX_REPOS in limit validation", async () => {
+    // Save original environment
+    const originalEnv = process.env.MAX_REPOS;
+
+    try {
+      // Set MAX_REPOS environment variable
+      process.env.MAX_REPOS = "35";
+
+      // Import utilities with the new environment setting
+      const { validateLimit } = await import("../src/utils.js?t=" + Date.now());
+
+      // Test with value under the limit
+      const result1 = validateLimit(20);
+      assert.strictEqual(result1, 20, "Should allow values below MAX_REPOS");
+
+      // Test with value over the limit
+      const result2 = validateLimit(50);
+      assert.strictEqual(result2, 35, "Should cap at MAX_REPOS value");
+    } finally {
+      // Restore original environment
+      process.env.MAX_REPOS = originalEnv;
+    }
+  });
+
   // Test with valid parameters but mock the execution to avoid actual API calls
   await t.test("should use ICJIA as default organization", () => {
     const result = spawnSync("node", [cliPath, "--version"], {

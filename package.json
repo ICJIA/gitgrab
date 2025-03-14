@@ -16,6 +16,8 @@
     "test:github": "node --test tests/github.test.js",
     "test:git": "node --test tests/git.test.js",
     "test:cli": "node --test tests/cli.test.js",
+    "test:utils": "node --test tests/utils.test.js",
+    "test:coverage": "node --experimental-test-coverage --test tests/",
     "prepare": "chmod +x bin/index.js",
     "prepublishOnly": "npm test"
   },

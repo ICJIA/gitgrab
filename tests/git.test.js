@@ -84,3 +84,93 @@ test("Git - cloneRepositories function", async (t) => {
     }
   });
 });
+
+// Add new tests for Git errors and edge cases
+test("Git error handling", async (t) => {
+  const testDir = path.join(__dirname, "test-repos-errors");
+
+  // Setup
+  await t.before(async () => {
+    await fs.ensureDir(testDir);
+  });
+
+  // Teardown
+  await t.after(async () => {
+    await fs.remove(testDir);
+  });
+
+  await t.test("should handle Git clone errors", async () => {
+    // Mock a Git error
+    mock.method(simpleGit(), "clone", async () => {
+      throw new Error("Git clone failed");
+    });
+
+    const mockRepo = {
+      name: "error-repo",
+      clone_url: "https://github.com/ICJIA/nonexistent-repo.git",
+      language: "JavaScript",
+      size: 1000,
+      stars: 5,
+    };
+
+    const result = await cloneRepositories([mockRepo], testDir);
+    assert.strictEqual(result[0].status, "failed");
+    assert.strictEqual(result[0].error, "Git clone failed");
+  });
+
+  await t.test("should handle existing repository checks", async () => {
+    // Create a directory that looks like a repo
+    const repoDir = path.join(testDir, "fake-git-repo");
+    const gitDir = path.join(repoDir, ".git");
+    await fs.ensureDir(gitDir);
+
+    // Mock Git operations
+    mock.method(simpleGit(), "raw", async (args) => {
+      if (args[0] === "rev-list" && args[1] === "--count") {
+        return "42";
+      }
+      return "";
+    });
+
+    const mockRepo = {
+      name: "fake-git-repo",
+      clone_url: "https://github.com/ICJIA/fake-git-repo.git",
+      language: "TypeScript",
+      size: 2000,
+      stars: 10,
+    };
+
+    const result = await cloneRepositories([mockRepo], testDir);
+    assert.strictEqual(result[0].status, "existing");
+    assert.strictEqual(result[0].commit_count, 42);
+  });
+
+  await t.test("should handle non-git directory", async () => {
+    // Create a non-git directory
+    const nonGitDir = path.join(testDir, "non-git-dir");
+    await fs.ensureDir(nonGitDir);
+    await fs.writeFile(path.join(nonGitDir, "dummy.txt"), "dummy content");
+
+    // Mock successful Git clone
+    mock.method(simpleGit(), "clone", async () => {
+      return { success: true };
+    });
+
+    // Mock Git operations after clone
+    mock.method(simpleGit(), "raw", async () => {
+      return "5";
+    });
+
+    const mockRepo = {
+      name: "non-git-dir",
+      clone_url: "https://github.com/ICJIA/valid-repo.git",
+      language: "HTML",
+      size: 500,
+      stars: 3,
+    };
+
+    const result = await cloneRepositories([mockRepo], testDir);
+    assert.strictEqual(result[0].status, "cloned");
+    assert.strictEqual(result[0].commit_count, 5);
+  });
+});

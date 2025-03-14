@@ -12,7 +12,11 @@ import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
 import inquirer from "inquirer";
-import { validateLimit } from "../src/utils.js";
+import {
+  validateLimit,
+  isValidGitHubToken,
+  getMaxReposLimit,
+} from "../src/utils.js";
 
 // Get the project root directory
 const __filename = fileURLToPath(import.meta.url);
@@ -22,17 +26,6 @@ const defaultReposDir = path.join(projectRoot, "repos");
 
 // Load environment variables
 dotenv.config();
-
-// Function to validate GitHub token format
-function isValidGitHubToken(token) {
-  // GitHub tokens are typically 40 characters long and alphanumeric
-  return (
-    token &&
-    /^ghp_[A-Za-z0-9_]{36}$|^github_pat_[A-Za-z0-9_]{22}_[A-Za-z0-9]{59}$/.test(
-      token
-    )
-  );
-}
 
 // Function to check and prepare the repository directory
 async function prepareReposDirectory(initialDir) {
@@ -148,7 +141,7 @@ program
   )
   .option(
     "-l, --limit <number>",
-    "Limit the number of repositories to display (max 15)",
+    `Limit the number of repositories to display (max ${getMaxReposLimit()})`,
     "15"
   )
   .action(async (target, options) => {
@@ -227,10 +220,11 @@ program
       let limit;
       try {
         limit = validateLimit(options.limit);
-        if (parseInt(options.limit, 10) > 15) {
+        const maxLimit = getMaxReposLimit();
+        if (parseInt(options.limit, 10) > maxLimit) {
           console.log(
             chalk.yellow(
-              `Limiting to maximum of 15 repositories (you requested ${options.limit})`
+              `Limiting to maximum of ${maxLimit} repositories (you requested ${options.limit})`
             )
           );
         }
@@ -243,7 +237,9 @@ program
       }
 
       // Fetch repositories
-      const spinner = ora(`Fetching up to 15 recent repositories...`).start();
+      const spinner = ora(
+        `Fetching up to ${getMaxReposLimit()} recent repositories...`
+      ).start();
       const repos = await getRepos(target, token, limit);
       spinner.succeed(
         `Found ${repos.length} recent repositories for ${target}`
