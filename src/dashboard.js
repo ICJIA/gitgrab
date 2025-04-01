@@ -35,13 +35,13 @@ export function displayDashboard(repos) {
   // Create table for detailed info
   const table = new Table({
     head: [
-      chalk.bold("Repository"),
-      chalk.bold("Language"),
-      chalk.bold("Size"),
-      chalk.bold("Stars"),
-      chalk.bold("Commits"),
-      chalk.bold("Status"),
-      chalk.bold("Location"),
+      chalk.bold.cyan("Repository"),
+      chalk.bold.cyan("Language"),
+      chalk.bold.cyan("Size"),
+      chalk.bold.cyan("Stars"),
+      chalk.bold.cyan("Commits"),
+      chalk.bold.cyan("Status"),
+      chalk.bold.cyan("Location"),
     ],
     colWidths: [30, 15, 12, 10, 10, 12, 50],
     wordWrap: true,
