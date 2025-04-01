@@ -1,5 +1,10 @@
 import Table from "cli-table3";
 import chalk from "chalk";
+import path from "path";
+import fs from "fs-extra";
+import * as dotenv from "dotenv";
+import { simpleGit } from "simple-git";
+dotenv.config();
 
 function formatSize(sizeInKB) {
   if (sizeInKB < 1024) {
@@ -15,7 +20,7 @@ function truncate(str, length) {
   return str.length > length ? str.substring(0, length - 3) + "..." : str;
 }
 
-export function displayDashboard(repos) {
+export async function displayDashboard(repos) {
   console.log("\n");
   console.log(chalk.bold.green("📊 GitHub Repositories Dashboard 📊"));
   console.log("\n");
@@ -64,6 +69,8 @@ export function displayDashboard(repos) {
         statusColor = chalk.white;
     }
 
+    const targetDir = path.join(directory, repo.name);
+
     table.push([
       truncate(chalk.cyan(repo.name), 28),
       truncate(repo.language || "N/A", 13),
@@ -109,4 +116,6 @@ export function displayDashboard(repos) {
     });
     console.log("\n");
   }
+
+  await fs.ensureDir(directory); // Creates directories with correct permissions
 }
