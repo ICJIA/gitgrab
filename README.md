@@ -1,6 +1,6 @@
 # 🔄 GitGrab
 
-A Node 18+ CLI tool to list, select, and bulk clone GitHub repositories. Works seamlessly across Linux, macOS, and Windows.
+A Node 18+ CLI tool to list, select, and bulk clone GitHub repositories. Works across Linux, macOS, and Windows.
 
 ## ✨ Features
 
@@ -8,7 +8,7 @@ A Node 18+ CLI tool to list, select, and bulk clone GitHub repositories. Works s
 - ✅ Select multiple repositories to clone simultaneously
 - 🖥️ Interactive selection interface with multi-select capability
 - 🗂️ Configurable repository storage location
-- 📊 Elegant dashboard display of repository information
+- 📊 Dashboard display of repository information
 - 🔄 Automatic sorting by most recently updated repositories
 - 💻 Cross-platform support (Linux, macOS, Windows)
 - 🚦 Smart handling of existing repositories
